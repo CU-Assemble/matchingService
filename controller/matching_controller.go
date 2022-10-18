@@ -15,6 +15,9 @@ import (
 	// "go.mongodb.org/mongo-driver/mongo"
 )
 
+// var matchingCollection *mongo.Collection = configs.GetCollection(configs.DB, "matching")
+
+
 func CreateMatching() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		// ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
