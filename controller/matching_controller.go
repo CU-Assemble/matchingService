@@ -1,82 +1,81 @@
 package controllers
 
 import (
-	// "context"
+	"context"
 	"net/http"
-	// "time"
+	"time"
 
 	"github.com/gin-gonic/gin"
 
+	"matchingService/configs"
 	"matchingService/models"
 	"matchingService/responses"
-	// "github.com/go-playground/validator/v10"
-	// "go.mongodb.org/mongo-driver/bson"
-	// "go.mongodb.org/mongo-driver/bson/primitive"
-	// "go.mongodb.org/mongo-driver/mongo"
+
+	"github.com/go-playground/validator/v10"
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo"
 )
 
-// var matchingCollection *mongo.Collection = configs.GetCollection(configs.DB, "matching")
-
+var matchingCollection *mongo.Collection = configs.GetCollection(configs.DB, "matching")
+var validate = validator.New()
 
 func CreateMatching() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		// ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-		var activity models.Activity
-		// defer cancel()
+		ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+		var userId models.UserId
+		activityId,_ := primitive.ObjectIDFromHex(c.Param("activityId"))
+		defer cancel()
 
 		//validate the request body
-		if err := c.BindJSON(&activity); err != nil {
+		if err := c.BindJSON(&userId); err != nil {
 			c.JSON(http.StatusBadRequest, responses.Response{Status: http.StatusBadRequest, Message: "error", Data: map[string]interface{}{"data": err.Error()}})
 			return
 		}
 
 		//use the validator library to validate required fields
-		// if validationErr := validate.Struct(&activity); validationErr != nil {
-		//     c.JSON(http.StatusBadRequest, responses.Response{Status: http.StatusBadRequest, Message: "error", Data: map[string]interface{}{"data": validationErr.Error()}})
-		//     return
-		// }
+		if validationErr := validate.Struct(&userId); validationErr != nil {
+		    c.JSON(http.StatusBadRequest, responses.Response{Status: http.StatusBadRequest, Message: "error", Data: map[string]interface{}{"data": validationErr.Error()}})
+		    return
+		}
 
-		// newUser := models.Activity{
-		//     Name:      		activity.Name,
-		// 	Description: 	activity.Description,
-		// 	ImageProfile:	activity.ImageProfile,
-		// 	Type:			activity.Type,
-		// 	OwnerId: 		activity.OwnerId,
-		// 	Location:		activity.Location,
-		// 	MaxParticipant:	activity.MaxParticipant,
-		// 	Participant:    activity.Participant,
-		// 	Date:			activity.Date,
-		// 	Duration:		activity.Duration,
-		// 	ChatId:			activity.ChatId,
-		// }
+		newMatching := models.Matching{
+			ActivityId	: activityId,
+			Participant : []string{userId.UserId},
+		}
+	
+		result, err := matchingCollection.InsertOne(ctx, newMatching)
+		if err != nil {
+		    c.JSON(http.StatusInternalServerError, responses.Response{Status: http.StatusInternalServerError, Message: "error", Data: map[string]interface{}{"data": err.Error()}})
+		    return
+		}
+	
+		c.JSON(http.StatusCreated, responses.Response{Status: http.StatusCreated, Message: "success", Data: map[string]interface{}{"data": result}})
 
-		// result, err := activityCollection.InsertOne(ctx, newUser)
-		// if err != nil {
-		//     c.JSON(http.StatusInternalServerError, responses.ActivityResponse{Status: http.StatusInternalServerError, Message: "error", Data: map[string]interface{}{"data": err.Error()}})
-		//     return
-		// }
-
-		c.JSON(http.StatusCreated, responses.Response{Status: http.StatusCreated, Message: "success", Data: map[string]interface{}{"data": "result"}})
 	}
 }
 
 func DeleteMatching() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		// ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-		// activityId := c.Param("activityId")
-		// var activity models.Activity
-		// defer cancel()
+		ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+		objId, _ := primitive.ObjectIDFromHex(c.Param("matchingId"))
+		defer cancel()
 
-		// objId, _ := primitive.ObjectIDFromHex(activityId)
+		result, err := matchingCollection.DeleteOne(ctx, bson.M{"_id": objId})
 
-		// err := activityCollection.FindOne(ctx, bson.M{"_id": objId}).Decode(&activity)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, responses.Response{Status: http.StatusInternalServerError, Message: "error", Data: map[string]interface{}{"data": err.Error()}})
+			return
+		}
 
-		// if err != nil {
-		// 	c.JSON(http.StatusInternalServerError, responses.ActivityResponse{Status: http.StatusInternalServerError, Message: "error", Data: map[string]interface{}{"data": err.Error()}})
-		// 	return
-		// }
+		if result.DeletedCount < 1 {
+			c.JSON(http.StatusNotFound,
+				responses.Response{Status: http.StatusNotFound, Message: "error", Data: map[string]interface{}{"data": "User with specified ID not found!"}},
+			)
+			return
+		}
 
-		c.JSON(http.StatusOK, responses.Response{Status: http.StatusOK, Message: "success", Data: map[string]interface{}{"data": "activity"}})
+		c.JSON(http.StatusOK, responses.Response{Status: http.StatusOK, Message: "success", Data: map[string]interface{}{"data": "User successfully deleted!"}})
 	}
 }
 

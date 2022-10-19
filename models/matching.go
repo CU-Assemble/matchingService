@@ -2,22 +2,16 @@ package models
 
 import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
-	"time"
 )
 
+type UserId struct{
+	UserId			string `json: "userId"`
+}
 
-type Activity struct{
+type Matching struct{
 	ID    				primitive.ObjectID `bson:"_id" json:"id,omitempty"`
-	Name 				string `json:"activityName" validate:"required"`
-	Description 		string  `json: "description"`
-	// ImageProfile 		string `json: "imageProfile"`
-	OwnerId 			string `json: "ownerId" validate:"required"`
-	Location			string `json: "location" validate:"required"`
-	MaxParticipant		int `json: "maxParticipant" validate:"required"`
+	ActivityId			primitive.ObjectID `bson:"activityId" json:"activityId"`
 	Participant			[]string `json: "participant"`
-	Date				time.Time `json: "date"`
-	Duration			float32 `json: "duration"` 
-	ChatId   			string `json: "chatId"`
 } 
 
 type response struct {

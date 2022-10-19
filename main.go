@@ -1,17 +1,19 @@
 package main
 
 import (
-	// "fmt"
 	"context"
+	"fmt"
 	"log"
-	
+	"os"
+
 	"strings"
 	"time"
 
+	"matchingService/configs"
+	controllers "matchingService/controller"
 	"matchingService/services"
-	// "net/http"
 
-	// "github.com/gin-gonic/gin"
+	"github.com/gin-gonic/gin"
 
 	amqp "github.com/rabbitmq/amqp091-go"
 )
@@ -24,6 +26,8 @@ func failOnError(err error, msg string) {
 }
 
 func main() {
+
+	PORT := os.Getenv("PORT")
 
 	conn, err := amqp.Dial("amqp://guest:guest@localhost:5672/")
     failOnError(err, "Failed to connect to RabbitMQ")
@@ -78,12 +82,6 @@ func main() {
 						result,err = services.CreateMatching(n[1])
 					case "delete":
 						result,err = services.DeleteMatching(n[1])
-					case "attend":
-						result,err = services.AttendActivity(n[1],n[2])
-					case "leave":
-						result,err = services.LeaveActivity(n[1],n[2])
-					case "get":
-						result,err = services.GetMatching(n[1])
 					default:
 						result,err = "serviceType error",error(nil)
 					}
@@ -108,16 +106,19 @@ func main() {
 
 	log.Printf(" [*] Awaiting RPC requests")
 	<-forever
-
-	// r := gin.New()
-	// r.GET("/", func(c *gin.Context) {
-	// 	c.JSON(http.StatusOK, gin.H{
-	// 		"message": "Hello World!",
-	// 	})
-	// })
-	// r.Run()
+	fmt.Println("Successfully Connected to our RabbitMQ Instance")
 
 
 
-	// fmt.Println("Successfully Connected to our RabbitMQ Instance")
+	r := gin.Default()
+	configs.ConnectDB()
+	
+	r.POST("/matching/:activityId", controllers.CreateMatching())
+	r.DELETE("/matching/:matchingId", controllers.DeleteMatching())
+	r.PUT("/matching/:matchingId", controllers.AttendActivity())
+	r.PUT("/matching/:matchingId", controllers.LeaveActivity())
+	r.GET("/matching/:matchingId", controllers.GetMatching())
+
+	r.Run("localhost:"+PORT)
+
 }
