@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 	"time"
 
@@ -38,8 +39,8 @@ func CreateMatching() gin.HandlerFunc {
 		    c.JSON(http.StatusBadRequest, responses.Response{Status: http.StatusBadRequest, Message: "error", Data: map[string]interface{}{"data": validationErr.Error()}})
 		    return
 		}
-
-		newMatching := models.Matching{
+		fmt.Println("Create Matching")
+		newMatching := models.MatchingCreate{
 			ActivityId	: activityId,
 			Participant : []string{userId.UserId},
 		}
