@@ -1,0 +1,10 @@
+POST http://localhost:8081/matching/6342d0c6c3486ee1da28641d
+# Content-Type: application/json
+
+# /matching/leave
+{
+    "userId": "15461565"
+}
+
+#####
+DELETE http://localhost:8081/matching/000000000000000000000000
