@@ -116,27 +116,34 @@ func AttendActivity() gin.HandlerFunc {
 
 func LeaveActivity() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		// ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-		// activityId := c.Param("activityId")
-		// defer cancel()
+		ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+		var userId models.UserId
+		activityId, _ := primitive.ObjectIDFromHex(c.Param("activityId"))
+		defer cancel()
 
-		// objId, _ := primitive.ObjectIDFromHex(activityId)
+		//validate the request body
+		if err := c.BindJSON(&userId); err != nil {
+			c.JSON(http.StatusBadRequest, responses.Response{Status: http.StatusBadRequest, Message: "error binding", Data: map[string]interface{}{"data": err.Error()}})
+			return
+		}
 
-		// result, err := activityCollection.DeleteOne(ctx, bson.M{"_id": objId})
+		//use the validator library to validate required fields
+		if validationErr := validate.Struct(&userId); validationErr != nil {
+			c.JSON(http.StatusBadRequest, responses.Response{Status: http.StatusBadRequest, Message: "error validate", Data: map[string]interface{}{"data": validationErr.Error()}})
+			return
+		}
 
-		// if err != nil {
-		// 	c.JSON(http.StatusInternalServerError, responses.ActivityResponse{Status: http.StatusInternalServerError, Message: "error", Data: map[string]interface{}{"data": err.Error()}})
-		// 	return
-		// }
+		fmt.Println("attending user at act ID", activityId)
+		filter := bson.D{{"activityId", activityId}}
+		change := bson.M{"$pull": bson.M{"participant": userId}}
 
-		// if result.DeletedCount < 1 {
-		// 	c.JSON(http.StatusNotFound,
-		// 		responses.ActivityResponse{Status: http.StatusNotFound, Message: "error", Data: map[string]interface{}{"data": "User with specified ID not found!"}},
-		// 	)
-		// 	return
-		// }
+		result, err := matchingCollection.UpdateOne(ctx, filter, change)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, responses.Response{Status: http.StatusInternalServerError, Message: "error", Data: map[string]interface{}{"data": err.Error()}})
+			return
+		}
 
-		c.JSON(http.StatusOK, responses.Response{Status: http.StatusOK, Message: "success", Data: map[string]interface{}{"data": "User successfully deleted!"}})
+		c.JSON(http.StatusOK, responses.Response{Status: http.StatusOK, Message: "success", Data: map[string]interface{}{"data": result}})
 	}
 }
 
