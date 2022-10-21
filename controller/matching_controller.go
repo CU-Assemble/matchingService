@@ -104,7 +104,7 @@ func AttendActivity() gin.HandlerFunc {
 
 		fmt.Println("attending user at act ID", activityId)
 		filter := bson.D{{"activityId", activityId}}
-		change := bson.M{"$push": bson.M{"participant": userId}}
+		change := bson.M{"$push": bson.M{"participant": userId.UserId}}
 
 		result, err := matchingCollection.UpdateOne(ctx, filter, change)
 		if err != nil {
@@ -137,7 +137,7 @@ func LeaveActivity() gin.HandlerFunc {
 
 		fmt.Println("attending user at act ID", activityId)
 		filter := bson.D{{"activityId", activityId}}
-		change := bson.M{"$pull": bson.M{"participant": userId}}
+		change := bson.M{"$pull": bson.M{"participant": userId.UserId}}
 
 		result, err := matchingCollection.UpdateOne(ctx, filter, change)
 		if err != nil {
