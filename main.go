@@ -15,13 +15,13 @@ func main() {
 
 	r := gin.Default()
 	configs.ConnectDB()
-	
+
 	r.POST("/matching/:activityId", controllers.CreateMatching())
 	r.DELETE("/matching/:matchingId", controllers.DeleteMatching())
-	r.PUT("/matching/attend/:matchingId", controllers.AttendActivity())
-	r.PUT("/matching/leave/:matchingId", controllers.LeaveActivity())
+	r.PUT("/matching/attend/:activityId", controllers.AttendActivity())
+	r.PUT("/matching/leave/:activityId", controllers.LeaveActivity())
 	r.GET("/matching/:matchingId", controllers.GetMatching())
 
-	r.Run("localhost:"+PORT)
+	r.Run("localhost:" + PORT)
 
 }

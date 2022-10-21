@@ -85,24 +85,24 @@ func AttendActivity() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 		var userId models.UserId
-		objId, _ := primitive.ObjectIDFromHex(c.Param("matchingId"))
+		activityId, _ := primitive.ObjectIDFromHex(c.Param("activityId"))
 		defer cancel()
 
 		//validate the request body
 		if err := c.BindJSON(&userId); err != nil {
-			c.JSON(http.StatusBadRequest, responses.Response{Status: http.StatusBadRequest, Message: "error", Data: map[string]interface{}{"data": err.Error()}})
+			c.JSON(http.StatusBadRequest, responses.Response{Status: http.StatusBadRequest, Message: "error binding", Data: map[string]interface{}{"data": err.Error()}})
 			return
 		}
 
 		//use the validator library to validate required fields
 		if validationErr := validate.Struct(&userId); validationErr != nil {
-			c.JSON(http.StatusBadRequest, responses.Response{Status: http.StatusBadRequest, Message: "error", Data: map[string]interface{}{"data": validationErr.Error()}})
+			c.JSON(http.StatusBadRequest, responses.Response{Status: http.StatusBadRequest, Message: "error validate", Data: map[string]interface{}{"data": validationErr.Error()}})
 			return
 		}
 
-		fmt.Println("attending user")
-		filter := bson.D{{"_id", objId}}
-		change := bson.M{"$push": bson.M{"matching.$.participant": userId}}
+		fmt.Println("attending user at act ID", activityId)
+		filter := bson.D{{"activityId", activityId}}
+		change := bson.M{"$push": bson.M{"participant": userId}}
 
 		result, err := matchingCollection.UpdateOne(ctx, filter, change)
 		if err != nil {
