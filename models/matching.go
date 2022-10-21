@@ -8,7 +8,7 @@ import (
 )
 
 type UserId struct {
-	UserId string `json: "userId"`
+	UserId string `json: "studentId"`
 }
 
 type MatchingCreate struct {
