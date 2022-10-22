@@ -54,7 +54,7 @@ func CreateMatching() gin.HandlerFunc {
 			return
 		}
 
-		c.JSON(http.StatusCreated, responses.Response{Status: http.StatusCreated, Message: "success", Data: map[string]interface{}{"data": result}})
+		c.JSON(http.StatusCreated, responses.Response{Status: http.StatusCreated, Message: "success", Data: map[string]interface{}{"data": result.InsertedID}})
 
 	}
 }
