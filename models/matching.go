@@ -46,16 +46,16 @@ type response struct {
 }
 
 type Activity struct {
-	ActivityId     string    `json:"ActivityId"`
-	Name           string    `json:"Name"`
-	Description    string    `json:"Description"`
-	ActivityType   []string  `json:"ActivityType"`
-	ImageProfile   string    `json:"ImageProfile"`
-	OwnerId        string    `json:"OwnerId"`
-	Location       string    `json:"Location"`
-	MaxParticipant int       `json:"MaxParticipant"`
-	Participant    string    `json:"Participant"`
-	Date           time.Time `json:"Date"`
-	Duration       float32   `json:"Duration"`
-	ChatId         string    `json:"ChatId"`
+	ActivityId     string   `json:"ActivityId"`
+	Name           string   `json:"Name"`
+	Description    string   `json:"Description"`
+	ActivityType   []string `json:"ActivityType"`
+	ImageProfile   string   `json:"ImageProfile"`
+	OwnerId        string   `json:"OwnerId"`
+	Location       string   `json:"Location"`
+	MaxParticipant int      `json:"MaxParticipant"`
+	Participant    string   `json:"Participant"`
+	Date           string   `json:"Date"`
+	Duration       float32  `json:"Duration"`
+	ChatId         string   `json:"ChatId"`
 }

@@ -178,7 +178,9 @@ func GetMatching() gin.HandlerFunc {
 		matchingDetail.Activity.ActivityId = act.ActivityId
 		matchingDetail.Activity.Name = act.Name
 		matchingDetail.Activity.Description = act.Description
-		matchingDetail.Activity.ActivityType = act.ActivityType
+		matchingDetail.Activity.ActivityType = []string{}
+		matchingDetail.Activity.ActivityType = append(matchingDetail.Activity.ActivityType, act.ActivityType...)
+		fmt.Println(act.ActivityType, "111")
 		matchingDetail.Activity.ImageProfile = act.ImageProfile
 		matchingDetail.Activity.OwnerId = act.OwnerId
 		matchingDetail.Activity.Location = act.Location
@@ -258,17 +260,17 @@ func GetMatchingByActivity() gin.HandlerFunc {
 }
 
 type Activity struct {
-	ActivityId     string    `json:"ActivityId"`
-	Name           string    `json:"Name" validate:"required"`
-	Description    string    `json: "Description"`
-	ActivityType   []string  `json: "ActivityType"`
-	ImageProfile   string    `json: "ImageProfile"`
-	OwnerId        string    `json: "OwnerId" validate:"required"`
-	Location       string    `json: "Location" validate:"required"`
-	MaxParticipant int       `json: "MaxParticipant" validate:"required"`
-	Date           time.Time `json: "Date"`
-	Duration       float32   `json: "Duration"`
-	ChatId         string    `json: "ChatId"`
+	ActivityId     string   `json:"ActivityId"`
+	Name           string   `json:"Name" validate:"required"`
+	Description    string   `json: "Description"`
+	ActivityType   []string `json: "ActivityType"`
+	ImageProfile   string   `json: "ImageProfile"`
+	OwnerId        string   `json: "OwnerId" validate:"required"`
+	Location       string   `json: "Location" validate:"required"`
+	MaxParticipant int      `json: "MaxParticipant" validate:"required"`
+	Date           string   `json: "Date"`
+	Duration       float32  `json: "Duration"`
+	ChatId         string   `json: "ChatId"`
 }
 
 type MatchingFullDetail struct {
@@ -333,7 +335,8 @@ func GetMatchingByParticaipant() gin.HandlerFunc {
 			matchingDetail.Activity.ActivityId = act.ActivityId
 			matchingDetail.Activity.Name = act.Name
 			matchingDetail.Activity.Description = act.Description
-			matchingDetail.Activity.ActivityType = act.ActivityType
+			matchingDetail.Activity.ActivityType = []string{}
+			matchingDetail.Activity.ActivityType = append(matchingDetail.Activity.ActivityType, act.ActivityType...)
 			matchingDetail.Activity.ImageProfile = act.ImageProfile
 			matchingDetail.Activity.OwnerId = act.OwnerId
 			matchingDetail.Activity.Location = act.Location
