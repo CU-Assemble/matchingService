@@ -18,8 +18,8 @@ func main() {
 
 	r.POST("/matching/:activityId", controllers.CreateMatching())
 	r.DELETE("/matching/:matchingId", controllers.DeleteMatching())
-	r.PUT("/matching/attend/:activityId", controllers.AttendActivity())
-	r.PUT("/matching/leave/:activityId", controllers.LeaveActivity())
+	r.POST("/attendActivity/:activityId", controllers.AttendActivity())
+	r.POST("/leaveActivity/:activityId", controllers.LeaveActivity())
 	r.GET("/matching/:matchingId", controllers.GetMatching())
 	r.GET("/getMatchingByActivity/:activityId", controllers.GetMatchingByActivity())
 	r.GET("/getActivitiesByParticipant/:userId", controllers.GetMatchingByParticaipant())
