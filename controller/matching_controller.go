@@ -19,7 +19,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 )
-
+var activityCollection *mongo.Collection = configs.GetCollection(configs.DB, "activitys")
 var matchingCollection *mongo.Collection = configs.GetCollection(configs.DB, "matching")
 var validate = validator.New()
 
@@ -63,21 +63,34 @@ func DeleteMatching() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 		objId, _ := primitive.ObjectIDFromHex(c.Param("matchingId"))
-		defer cancel()
 
-		result, err := matchingCollection.DeleteOne(ctx, bson.M{"_id": objId})
+		var matching models.Matching
+		result := matchingCollection.FindOne(ctx, bson.M{"_id": objId}).Decode(&matching)
 
-		if err != nil {
-			c.JSON(http.StatusInternalServerError, responses.Response{Status: http.StatusInternalServerError, Message: "error", Data: map[string]interface{}{"data": err.Error()}})
+		if result != nil {
+			c.JSON(http.StatusInternalServerError, responses.Response{Status: http.StatusInternalServerError, Message: "error", Data: map[string]interface{}{"data": result.Error()}})
 			return
 		}
 
-		if result.DeletedCount < 1 {
+		defer cancel()
+
+		result1, err := matchingCollection.DeleteOne(ctx, bson.M{"_id": objId})
+		
+		if result1.DeletedCount < 1 {
 			c.JSON(http.StatusNotFound,
 				responses.Response{Status: http.StatusNotFound, Message: "error", Data: map[string]interface{}{"data": "User with specified ID not found!"}},
 			)
 			return
 		}
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, responses.Response{Status: http.StatusInternalServerError, Message: "error", Data: map[string]interface{}{"data": err.Error()}})
+			return
+		}
+
+		result2, err2 := activityCollection.DeleteOne(ctx, bson.M{"_id": matching.ActivityId})
+
+		_ = result2
+		_ = err2
 
 		c.JSON(http.StatusOK, responses.Response{Status: http.StatusOK, Message: "success", Data: map[string]interface{}{"data": "User successfully deleted!"}})
 	}
