@@ -19,6 +19,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 )
+
 var activityCollection *mongo.Collection = configs.GetCollection(configs.DB, "activitys")
 var matchingCollection *mongo.Collection = configs.GetCollection(configs.DB, "matching")
 var validate = validator.New()
@@ -75,7 +76,7 @@ func DeleteMatching() gin.HandlerFunc {
 		defer cancel()
 
 		result1, err := matchingCollection.DeleteOne(ctx, bson.M{"_id": objId})
-		
+
 		if result1.DeletedCount < 1 {
 			c.JSON(http.StatusNotFound,
 				responses.Response{Status: http.StatusNotFound, Message: "error", Data: map[string]interface{}{"data": "User with specified ID not found!"}},
@@ -177,8 +178,8 @@ func GetMatching() gin.HandlerFunc {
 		}
 		matchingDetail.MatchingId = matching.ID.String()
 		var myClient = &http.Client{Timeout: 10 * time.Second}
-		resp, err := myClient.Get("http://localhost:8000/activity/" + matching.ActivityId.Hex())
-		fmt.Println("http://localhost:8000/activity/" + matching.ActivityId.Hex())
+		resp, err := myClient.Get("http://172.31.86.56:8000/activity/" + matching.ActivityId.Hex())
+		fmt.Println("http://172.31.86.56:8000/activity/" + matching.ActivityId.Hex())
 		if err != nil {
 			return
 		}
@@ -204,7 +205,7 @@ func GetMatching() gin.HandlerFunc {
 
 		for i, par := range matching.Participant {
 			fmt.Print(i)
-			resp, err := myClient.Get("http://localhost:3000/user/" + par)
+			resp, err := myClient.Get("http://172.31.86.56:3000/user/" + par)
 			if err != nil {
 				return
 			}
@@ -248,7 +249,7 @@ func GetMatchingByActivity() gin.HandlerFunc {
 		for i, par := range matching.Participant {
 			fmt.Print(i)
 			var myClient = &http.Client{Timeout: 10 * time.Second}
-			resp, err := myClient.Get("http://localhost:3000/user/" + par)
+			resp, err := myClient.Get("http://172.31.86.56:3000/user/" + par)
 			if err != nil {
 				return
 			}
@@ -334,8 +335,8 @@ func GetMatchingByParticaipant() gin.HandlerFunc {
 			var matchingDetail MatchingFullDetail
 			matchingDetail.MatchingId = matching.ID.String()
 			var myClient = &http.Client{Timeout: 10 * time.Second}
-			resp, err := myClient.Get("http://localhost:8000/activity/" + matching.ActivityId.Hex())
-			fmt.Println("http://localhost:8000/activity/" + matching.ActivityId.Hex())
+			resp, err := myClient.Get("http://172.31.86.56:8000/activity/" + matching.ActivityId.Hex())
+			fmt.Println("http://172.31.86.56:8000/activity/" + matching.ActivityId.Hex())
 			if err != nil {
 				return
 			}
@@ -361,7 +362,7 @@ func GetMatchingByParticaipant() gin.HandlerFunc {
 			for i, par := range matching.Participant {
 				fmt.Print(i)
 				var myClient = &http.Client{Timeout: 10 * time.Second}
-				resp, err := myClient.Get("http://localhost:3000/user/" + par)
+				resp, err := myClient.Get("http://172.31.86.56:3000/user/" + par)
 				if err != nil {
 					return
 				}
