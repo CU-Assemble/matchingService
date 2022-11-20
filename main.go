@@ -104,5 +104,5 @@ func main() {
 		})
 
 	})
-	r.Run("localhost:" + PORT)
+	r.Run("172.31.86.56:" + PORT)
 }
